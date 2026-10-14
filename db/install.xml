@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="local/vikesa_coursewizard/db" VERSION="20260926" COMMENT="local_vikesa_coursewizard tables">
+  <TABLES>
+    <TABLE NAME="local_vikesa_institution" COMMENT="Maps a Casdoor institution to its Moodle category and its fixed 'responsible' (always-Teacher) jobtitle">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="institution" TYPE="char" LENGTH="255" NOTNULL="true" COMMENT="Exact institution string as sent by Casdoor"/>
+        <FIELD NAME="categoryid" TYPE="int" LENGTH="10" NOTNULL="true" COMMENT="Moodle course_categories.id this institution's courses live under"/>
+        <FIELD NAME="responsiblejobtitle" TYPE="char" LENGTH="255" NOTNULL="true" COMMENT="Jobtitle value that always grants Teacher + course-creation rights in this institution's category"/>
+        <FIELD NAME="logourl" TYPE="char" LENGTH="1333" NOTNULL="false" COMMENT="Org logo URL pulled from Casdoor"/>
+        <FIELD NAME="faviconurl" TYPE="char" LENGTH="1333" NOTNULL="false" COMMENT="Org favicon URL pulled from Casdoor"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="categoryid" TYPE="foreign" FIELDS="categoryid" REFTABLE="course_categories" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="institution" UNIQUE="true" FIELDS="institution"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="local_vikesa_usersync" COMMENT="Last synced institution/jobtitle per user, so the observer/task can diff and move cohort membership on change">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="institution" TYPE="char" LENGTH="255" NOTNULL="false"/>
+        <FIELD NAME="jobtitle" TYPE="char" LENGTH="255" NOTNULL="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign-unique" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="local_vikesa_course_meta" COMMENT="Per-course metadata not captured by core: currently just the renewal period for periodical courses">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="renewalmonths" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="Deprecated, superseded by renewalvalue+renewalunit. Kept for old data, no longer written."/>
+        <FIELD NAME="renewalvalue" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="NULL = one-off course. Paired with renewalunit: how long after a user's completion date before they're due again."/>
+        <FIELD NAME="renewalunit" TYPE="char" LENGTH="10" NOTNULL="false" COMMENT="One of: day, week, month, year."/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="courseid" TYPE="foreign-unique" FIELDS="courseid" REFTABLE="course" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>
