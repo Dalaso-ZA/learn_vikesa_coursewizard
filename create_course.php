@@ -5,6 +5,7 @@ require_once($CFG->dirroot . '/course/lib.php');
 
 use local_vikesa_coursewizard\manager;
 use local_vikesa_coursewizard\form\create_course_form;
+use local_vikesa_coursewizard\form\create_course_simple_form;
 
 require_login();
 
@@ -28,7 +29,14 @@ $PAGE->set_url(new moodle_url('/local/vikesa_coursewizard/create_course.php'));
 $PAGE->set_title(get_string('createcourse', 'local_vikesa_coursewizard'));
 $PAGE->set_pagelayout('standard');
 
-$form = new create_course_form(null, ['institutionrec' => $institutionrec]);
+// Creators get the short form. Administrators can open the full one with ?mode=advanced.
+$advanced = is_siteadmin() && optional_param('mode', '', PARAM_ALPHA) === 'advanced';
+if ($advanced) {
+    $form = new create_course_form(new moodle_url('/local/vikesa_coursewizard/create_course.php', ['mode' => 'advanced']),
+        ['institutionrec' => $institutionrec]);
+} else {
+    $form = new create_course_simple_form(null, ['institutionrec' => $institutionrec]);
+}
 
 if ($form->is_cancelled()) {
     redirect(new moodle_url('/course/index.php', ['categoryid' => $institutionrec->categoryid]));
@@ -93,6 +101,10 @@ if ($data = $form->get_data()) {
 }
 
 echo $OUTPUT->header();
+if (is_siteadmin() && !$advanced) {
+    echo html_writer::link(new moodle_url('/local/vikesa_coursewizard/create_course.php', ['mode' => 'advanced']),
+        get_string('advancedmode', 'local_vikesa_coursewizard'), ['class' => 'btn btn-secondary mb-3']);
+}
 $form->display();
 echo $OUTPUT->footer();
 
@@ -106,7 +118,7 @@ echo $OUTPUT->footer();
  *
  * @return array of ['name' => string, 'contentfile' => ?string]
  */
-function corelib_resolve_course_entries(create_course_form $form, stdClass $data): array {
+function corelib_resolve_course_entries(object $form, stdClass $data): array {
     $files = $form->get_uploaded_files('coursesfile');
 
     if (empty($files)) {
@@ -142,7 +154,7 @@ function corelib_resolve_course_entries(create_course_form $form, stdClass $data
  * Filename -> file content, for every file uploaded via the bulk
  * "contentfiles" filemanager.
  */
-function corelib_resolve_content_files(create_course_form $form): array {
+function corelib_resolve_content_files(object $form): array {
     $map = [];
     foreach ($form->get_uploaded_files('contentfiles') as $file) {
         if (!$file->is_directory()) {
@@ -157,7 +169,7 @@ function corelib_resolve_content_files(create_course_form $form): array {
  * Kept as stored_file (not read into a string) since #FILE blocks need to
  * copy the actual binary file into a new draft area, not just its content.
  */
-function corelib_resolve_media_files(create_course_form $form): array {
+function corelib_resolve_media_files(object $form): array {
     $map = [];
     foreach ($form->get_uploaded_files('mediafiles') as $file) {
         if (!$file->is_directory()) {
@@ -170,7 +182,7 @@ function corelib_resolve_media_files(create_course_form $form): array {
 /**
  * Content for the single-course path's own "contentfile" filepicker.
  */
-function corelib_resolve_single_content(create_course_form $form): ?string {
+function corelib_resolve_single_content(object $form): ?string {
     foreach ($form->get_uploaded_files('contentfile') as $file) {
         if (!$file->is_directory()) {
             return $file->get_content();
@@ -204,7 +216,7 @@ function corelib_create_and_enrol_course(stdClass $institutionrec, string $cours
         }
     }
 
-    $renewalvalue = !empty($data->renewalvalue) ? (int) $data->renewalvalue : null;
+    $renewalvalue = !empty($data->renewalvalue ?? null) ? (int) $data->renewalvalue : null;
     $renewalunit = $renewalvalue !== null ? ($data->renewalunit ?? 'month') : null;
     manager::set_course_renewal($course->id, $renewalvalue, $renewalunit);
 
@@ -215,7 +227,7 @@ function corelib_create_and_enrol_course(stdClass $institutionrec, string $cours
     $manualenrol = enrol_get_plugin('manual');
 
     // Audience pills -> cohort-sync enrolment as Student.
-    foreach ((array) $data->jobtitles as $jobtitle) {
+    foreach ((array) ($data->jobtitles ?? []) as $jobtitle) {
         $cohortid = manager::ensure_cohort($institutionrec, $jobtitle);
         $cohortenrol->add_instance($course, [
             'customint1' => $cohortid,
@@ -231,17 +243,17 @@ function corelib_create_and_enrol_course(stdClass $institutionrec, string $cours
     ]);
 
     // Ad-hoc teachers -> manual enrolment as Teacher, this course only.
-    if (!empty($data->teachers)) {
+    if (!empty($data->teachers ?? null)) {
         $manualinstance = corelib_ensure_manual_instance($course);
-        foreach ((array) $data->teachers as $userid) {
+        foreach ((array) ($data->teachers ?? []) as $userid) {
             $manualenrol->enrol_user($manualinstance, (int) $userid, $teacherroleid);
         }
     }
 
     // Individual access -> manual enrolment as Student, bypasses pills.
-    if (!empty($data->individualaccess)) {
+    if (!empty($data->individualaccess ?? null)) {
         $manualinstance = corelib_ensure_manual_instance($course);
-        foreach ((array) $data->individualaccess as $userid) {
+        foreach ((array) ($data->individualaccess ?? []) as $userid) {
             $manualenrol->enrol_user($manualinstance, (int) $userid, $studentroleid);
         }
     }

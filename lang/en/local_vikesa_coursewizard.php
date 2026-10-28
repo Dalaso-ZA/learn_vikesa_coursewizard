@@ -82,3 +82,83 @@ $string['diagnose_desc'] = 'Enter a username or e-mail. Each condition for the C
 $string['diagnose_fix'] = 'Re-sync this user now';
 $string['diagnose_hint'] = 'The button also only appears on pages outside a course, and not on the wizard page itself.';
 
+// --- Simplified creator form ----------------------------------------------------
+$string['simplebasics'] = 'Course';
+$string['simpleaudience'] = 'Who is it for?';
+$string['simplecontent'] = 'Content (optional)';
+$string['simplecontenthint'] = 'Leave this empty to create an empty course. Or upload a text file in the course format, and add images or videos that the text refers to.';
+$string['needaudience'] = 'Choose at least one job title or person.';
+$string['advancedmode'] = 'Advanced options (administrators)';
+
+// --- Examples and hover tooltips on the creator form ------------------------------
+$string['examplebutton'] = 'Download example course (text)';
+$string['examplemediabutton'] = 'Download example image';
+$string['examplehint'] = 'Download both, then upload the text file and the image on this form. The text refers to the image by its file name, so keep the name as it is.';
+$string['tip_coursename'] = 'The name learners see in their course list. Use the name people already know the training by.';
+$string['tip_audiencepills'] = 'Everyone with one of these job titles is enrolled automatically as a learner. You can leave this empty if you choose people below.';
+$string['tip_individualaccess'] = 'Named people who should take this course, in addition to the job titles. Start typing a name to search.';
+$string['tip_contentfile'] = 'Optional. A text file in the course format. It creates the sections, pages, quizzes and images. Leave it empty for an empty course. Download the example to see the format.';
+$string['tip_mediafiles'] = 'Images and videos the text file refers to. Each file name must match the name in the text file exactly, including capital letters and the extension.';
+
+// --- Participants: per-person actions --------------------------------------------
+$string['howenrolled'] = 'How enrolled';
+$string['actions'] = 'Actions';
+$string['enrolledbyhand'] = 'Added by hand';
+$string['enrolledbyaudience'] = 'Through a job title or audience';
+$string['maketeacher'] = 'Make teacher';
+$string['makelearner'] = 'Make learner';
+$string['userremoved'] = 'The person has been removed from the course.';
+$string['rolechanged'] = 'The role has been changed.';
+
+// --- AI and storage settings (site administration) -------------------------------
+$string['ai_settings'] = 'AI and storage';
+$string['ai_head'] = 'AI server';
+$string['ai_head_desc'] = 'The model that writes courses from uploaded material. Any OpenAI-compatible server works, including your own GPU server.';
+$string['ai_baseurl'] = 'Base URL';
+$string['ai_baseurl_desc'] = 'For example https://ai.example.com/v1. The plugin adds /chat/completions.';
+$string['ai_model'] = 'Model name';
+$string['ai_model_desc'] = 'The name the server gives the model.';
+$string['ai_apikey'] = 'API key';
+$string['ai_apikey_desc'] = 'Leave empty if your server needs no key.';
+$string['ai_maxpages'] = 'Maximum pages per job';
+$string['ai_maxpages_desc'] = 'Larger uploads are refused with a message before any work starts.';
+$string['ai_maxtokens'] = 'Maximum estimated tokens per job';
+$string['ai_maxtokens_desc'] = 'Set this from the context size of the model on your server.';
+$string['quota_head'] = 'Default monthly quotas';
+$string['quota_head_desc'] = 'Used for every institution that has no value of its own. Estimated at up to about 5 USD per institution per month.';
+$string['quota_storage_gb'] = 'Storage (GB)';
+$string['quota_tokens'] = 'AI tokens';
+$string['quota_jobs'] = 'AI jobs';
+$string['quota_pages'] = 'Pages processed';
+$string['tier_private_head'] = 'Storage tier: private';
+$string['tier_private_head_desc'] = 'MinIO-like server for private media.';
+$string['tier_cdn_head'] = 'Storage tier: CDN';
+$string['tier_cdn_head_desc'] = 'Bunny CDN for media that may be public.';
+$string['tier_endpoint'] = 'Endpoint';
+$string['tier_bucket'] = 'Bucket';
+$string['tier_zone'] = 'Storage zone';
+$string['tier_accesskey'] = 'Access key';
+$string['tier_secret'] = 'Signing secret';
+$string['tier_zonekey'] = 'Storage zone password';
+$string['tier_tokenkey'] = 'Token authentication key';
+$string['tier_expiryhours'] = 'Link expiry (hours)';
+$string['tier_expiryhours_desc'] = 'How long a media link stays valid. 0 means links never expire.';
+// Institution form
+$string['storageheader'] = 'Storage and limits';
+$string['storagetier'] = 'Storage tier';
+$string['storagetier_private'] = 'Private (MinIO-like server)';
+$string['storagetier_cdn'] = 'CDN (Bunny)';
+$string['quotastorage'] = 'Storage limit (GB)';
+$string['quotatokens'] = 'AI tokens per month';
+$string['quotajobs'] = 'AI jobs per month';
+$string['quotapages'] = 'Pages processed per month';
+$string['sitedefault'] = 'site default';
+$string['quotahint'] = 'Leave a limit empty to use the site default. Bandwidth is shown in reports but not limited.';
+
+// --- Editor limits (course settings and activities for editing teachers) ----------
+$string['editorlimits'] = 'Editor limits';
+$string['editorlimits_desc'] = 'Editing teachers in company courses see a simpler course settings page and can only add Page, Label, File and Quiz activities. Administrators are not affected.';
+$string['editorlimits_newcourses'] = 'New courses get these limits automatically. Press the button once to apply them to existing courses.';
+$string['editorlimits_apply'] = 'Apply to all company courses';
+$string['editorlimitsapplied'] = 'Editor limits applied to {$a} courses.';
+$string['editorlimitchanged'] = 'Only the name, summary and course image can be changed here. Ask an administrator to change: {$a}.';

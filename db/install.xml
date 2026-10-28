@@ -9,6 +9,11 @@
         <FIELD NAME="responsiblejobtitle" TYPE="char" LENGTH="255" NOTNULL="true" COMMENT="Jobtitle value that always grants Teacher + course-creation rights in this institution's category"/>
         <FIELD NAME="logourl" TYPE="char" LENGTH="1333" NOTNULL="false" COMMENT="Org logo URL pulled from Casdoor"/>
         <FIELD NAME="faviconurl" TYPE="char" LENGTH="1333" NOTNULL="false" COMMENT="Org favicon URL pulled from Casdoor"/>
+        <FIELD NAME="storagetier" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="private" COMMENT="private (MinIO-like) or cdn (Bunny)"/>
+        <FIELD NAME="quotastorage" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="Storage in GB per month; null = site default"/>
+        <FIELD NAME="quotatokens" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="AI tokens per month; null = site default"/>
+        <FIELD NAME="quotajobs" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="AI jobs per month; null = site default"/>
+        <FIELD NAME="quotapages" TYPE="int" LENGTH="10" NOTNULL="false" COMMENT="Pages processed per month; null = site default"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true"/>
       </FIELDS>

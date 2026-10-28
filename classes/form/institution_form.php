@@ -27,6 +27,22 @@ class institution_form extends \moodleform {
         $mform->addRule('responsiblejobtitle', get_string('required'), 'required', null, 'client');
         $mform->addHelpButton('responsiblejobtitle', 'responsiblejobtitle', 'local_vikesa_coursewizard');
 
+        $mform->addElement('header', 'storageheader', get_string('storageheader', 'local_vikesa_coursewizard'));
+        $mform->addElement('select', 'storagetier', get_string('storagetier', 'local_vikesa_coursewizard'), [
+            'private' => get_string('storagetier_private', 'local_vikesa_coursewizard'),
+            'cdn' => get_string('storagetier_cdn', 'local_vikesa_coursewizard'),
+        ]);
+        $mform->addHelpButton('storagetier', 'storagetier', 'local_vikesa_coursewizard');
+
+        $placeholder = get_string('sitedefault', 'local_vikesa_coursewizard');
+        foreach (['quotastorage', 'quotatokens', 'quotajobs', 'quotapages'] as $field) {
+            $mform->addElement('text', $field, get_string($field, 'local_vikesa_coursewizard'), [
+                'placeholder' => $placeholder, 'size' => 12,
+            ]);
+            $mform->setType($field, PARAM_INT);
+        }
+        $mform->addElement('static', 'quotahint', '', get_string('quotahint', 'local_vikesa_coursewizard'));
+
         $mform->addElement('hidden', 'id', $record->id);
         $mform->setType('id', PARAM_INT);
 

@@ -50,6 +50,37 @@ if ($removejobtitle !== '' && confirm_sesskey()) {
         get_string('audienceremoved', 'local_vikesa_coursewizard'), null, \core\output\notification::NOTIFY_SUCCESS);
 }
 
+// Per-person actions for people added by hand (manual enrolment). Access
+// through a job title is set for the whole course and is not changed here.
+$personaction = optional_param('action', '', PARAM_ALPHA);
+$personid = optional_param('userid', 0, PARAM_INT);
+$studentroleid = $DB->get_field('role', 'id', ['shortname' => 'student'], MUST_EXIST);
+$teacherroleid = $DB->get_field('role', 'id', ['shortname' => 'editingteacher'], MUST_EXIST);
+if ($personaction !== '' && $personid > 0 && confirm_sesskey()) {
+    $manualinstance = $DB->get_record('enrol', ['courseid' => $courseid, 'enrol' => 'manual']);
+    $isbyhand = $manualinstance && $DB->record_exists('user_enrolments', ['enrolid' => $manualinstance->id, 'userid' => $personid]);
+    // Nobody removes or demotes themselves here; that would lock them out of the course.
+    if ($isbyhand && $personid !== (int) $USER->id) {
+        $manualenrol = enrol_get_plugin('manual');
+        if ($personaction === 'remove') {
+            $manualenrol->unenrol_user($manualinstance, $personid);
+            $message = get_string('userremoved', 'local_vikesa_coursewizard');
+        } else if ($personaction === 'toteacher' || $personaction === 'tolearner') {
+            $from = $personaction === 'toteacher' ? $studentroleid : $teacherroleid;
+            $to = $personaction === 'toteacher' ? $teacherroleid : $studentroleid;
+            role_unassign($from, $personid, $coursecontext->id, 'enrol_manual', $manualinstance->id);
+            role_assign($to, $personid, $coursecontext->id, 'enrol_manual', $manualinstance->id);
+            $message = get_string('rolechanged', 'local_vikesa_coursewizard');
+        } else {
+            $message = null;
+        }
+        if ($message !== null) {
+            redirect(new moodle_url('/local/vikesa_coursewizard/manage_participants.php', ['courseid' => $courseid]),
+                $message, null, \core\output\notification::NOTIFY_SUCCESS);
+        }
+    }
+}
+
 $form = new manage_participants_form(null, ['institutionrec' => $institutionrec, 'course' => $course]);
 
 if ($data = $form->get_data()) {
@@ -100,12 +131,35 @@ $enrolledusers = get_enrolled_users($coursecontext, '', 0, 'u.*', 'u.lastname AS
 if (empty($enrolledusers)) {
     echo html_writer::tag('p', get_string('noparticipants', 'local_vikesa_coursewizard'));
 } else {
+    $manualinstance = $DB->get_record('enrol', ['courseid' => $courseid, 'enrol' => 'manual']);
+    $byhand = [];
+    if ($manualinstance) {
+        $byhand = $DB->get_fieldset_select('user_enrolments', 'userid', 'enrolid = ?', [$manualinstance->id]);
+    }
+
     $table = new html_table();
-    $table->head = [get_string('fullname'), get_string('email'), get_string('roles', 'core_role')];
+    $table->head = [get_string('fullname'), get_string('email'), get_string('roles', 'core_role'),
+        get_string('howenrolled', 'local_vikesa_coursewizard'), get_string('actions', 'local_vikesa_coursewizard')];
     foreach ($enrolledusers as $enrolleduser) {
         $roles = get_user_roles($coursecontext, $enrolleduser->id, false);
-        $rolenames = array_map(fn($r) => $r->shortname, $roles);
-        $table->data[] = [fullname($enrolleduser), s($enrolleduser->email), implode(', ', $rolenames)];
+        $rolenames = array_map(fn($r) => role_get_name($r, $coursecontext), $roles);
+
+        $isbyhand = in_array($enrolleduser->id, $byhand);
+        $how = $isbyhand ? get_string('enrolledbyhand', 'local_vikesa_coursewizard')
+            : get_string('enrolledbyaudience', 'local_vikesa_coursewizard');
+
+        $actions = '';
+        if ($isbyhand && (int) $enrolleduser->id !== (int) $USER->id) {
+            $isteacher = in_array('editingteacher', array_map(fn($r) => $r->shortname, $roles));
+            $base = ['courseid' => $courseid, 'userid' => $enrolleduser->id, 'sesskey' => sesskey()];
+            $actions .= html_writer::link(new moodle_url('/local/vikesa_coursewizard/manage_participants.php',
+                $base + ['action' => $isteacher ? 'tolearner' : 'toteacher']),
+                get_string($isteacher ? 'makelearner' : 'maketeacher', 'local_vikesa_coursewizard'), ['class' => 'mr-2']);
+            $actions .= html_writer::link(new moodle_url('/local/vikesa_coursewizard/manage_participants.php',
+                $base + ['action' => 'remove']), get_string('remove'));
+        }
+
+        $table->data[] = [fullname($enrolleduser), s($enrolleduser->email), implode(', ', $rolenames), $how, $actions];
     }
     echo html_writer::table($table);
 }

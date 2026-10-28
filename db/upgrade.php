@@ -82,5 +82,31 @@ function xmldb_local_vikesa_coursewizard_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2026101305, 'local', 'vikesa_coursewizard');
     }
 
+    if ($oldversion < 2026102806) {
+        // Storage tier and per-institution quota overrides.
+        $table = new xmldb_table('local_vikesa_institution');
+        $fields = [
+            new xmldb_field('storagetier', XMLDB_TYPE_CHAR, '10', null, XMLDB_NOTNULL, null, 'private'),
+            new xmldb_field('quotastorage', XMLDB_TYPE_INTEGER, '10', null, null),
+            new xmldb_field('quotatokens', XMLDB_TYPE_INTEGER, '10', null, null),
+            new xmldb_field('quotajobs', XMLDB_TYPE_INTEGER, '10', null, null),
+            new xmldb_field('quotapages', XMLDB_TYPE_INTEGER, '10', null, null),
+        ];
+        foreach ($fields as $field) {
+            if (!$dbman->field_exists($table, $field)) {
+                $dbman->add_field($table, $field);
+            }
+        }
+
+        upgrade_plugin_savepoint(true, 2026102806, 'local', 'vikesa_coursewizard');
+    }
+
+    if ($oldversion < 2026102808) {
+        // Vikesa does not use MoodleNet; switch its footer off in the activity chooser.
+        set_config('enablemoodlenet', 0, 'tool_moodlenet');
+
+        upgrade_plugin_savepoint(true, 2026102808, 'local', 'vikesa_coursewizard');
+    }
+
     return true;
 }

@@ -14,4 +14,8 @@ $observers = [
         'eventname'   => '\core\event\user_loggedin',
         'callback'    => '\local_vikesa_coursewizard\observer::user_loggedin',
     ],
+    [
+        'eventname'   => '\core\event\course_created',
+        'callback'    => '\local_vikesa_coursewizard\observer::course_created',
+    ],
 ];

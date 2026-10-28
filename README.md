@@ -238,3 +238,14 @@ nightly for all, and from "Resync Vikesa users".
 Organisation logo/favicon: also read from Casdoor (`get-organization`) during
 the nightly run / "Resync Vikesa users" and stored on the institution record;
 `theme_vikesa` shows them in the navbar and tab icon for that institution's users.
+
+## Creator form and advanced mode (version 2026102800)
+
+- Course creators see a short form: course name, audience (job titles and people), and optional content (one text file and media files). The form is `classes/form/create_course_simple_form.php`.
+- Administrators can open the full form with `create_course.php?mode=advanced`. It has bulk CSV, multiple content files, ad-hoc teachers and renewal settings.
+- Both forms use the same handler and the same enrolment rules.
+- Creators cannot reach the advanced form, even with the URL.
+- Template for future zip uploads: `vikesa-course-template.zip` (not yet read by the plugin).
+
+- Creator form: the example text file and example image are downloadable from the form (`download_example.php`, only for people who can create courses). They work with the wizard as it is today.
+- Hover tooltips on the field labels give a one-line explanation; the help icon next to them gives the longer one.

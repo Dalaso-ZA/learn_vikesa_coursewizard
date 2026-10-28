@@ -20,4 +20,9 @@ class observer {
     public static function user_loggedin(\core\event\user_loggedin $event): void {
         casdoor::pull_user((int) $event->objectid);
     }
+
+    /** New courses get the editor limits from the moment they exist. */
+    public static function course_created(\core\event\course_created $event): void {
+        \local_vikesa_coursewizard\editor_limits::apply_to_course((int) $event->courseid);
+    }
 }

@@ -24,6 +24,11 @@ if ($editid) {
     } else if ($data = $form->get_data()) {
         $oldtitle = (string) $record->responsiblejobtitle;
         $record->responsiblejobtitle = trim($data->responsiblejobtitle);
+        $record->storagetier = in_array($data->storagetier, ['private', 'cdn'], true) ? $data->storagetier : 'private';
+        foreach (['quotastorage', 'quotatokens', 'quotajobs', 'quotapages'] as $field) {
+            $value = trim((string) ($data->$field ?? ''));
+            $record->$field = $value === '' ? null : max(0, (int) $value);
+        }
         $record->timemodified = time();
         $DB->update_record('local_vikesa_institution', $record);
         \local_vikesa_coursewizard\manager::refresh_creator_roles($record, $oldtitle);

@@ -1,0 +1,30 @@
+#SECTION: Welcome
+#PAGE: Why this course matters
+Everyone who handles goods must follow the same steps. This course explains them in order.
+#ENDPAGE
+#LABEL:
+<p><strong>Time needed:</strong> about 30 minutes.</p>
+#ENDLABEL
+
+#SECTION: Handling goods
+#SUBSECTION: Receiving a delivery
+#PAGE: Check the delivery note
+Compare every line of the delivery note with the goods. Report differences the same day.
+#ENDPAGE
+#FILE: Example image | section-2-example.png
+Shown next to the text above.
+#ENDFILE
+
+#QUIZ: Check your knowledge
+<?xml version="1.0" encoding="UTF-8"?>
+<quiz>
+  <question type="multichoice">
+    <name><text>Delivery check</text></name>
+    <questiontext format="html"><text><![CDATA[<p>When do you report a difference in a delivery?</p>]]></text></questiontext>
+    <defaultgrade>1</defaultgrade>
+    <single>true</single>
+    <answer fraction="100" format="html"><text>The same day</text></answer>
+    <answer fraction="0" format="html"><text>At the end of the month</text></answer>
+  </question>
+</quiz>
+#ENDQUIZ
